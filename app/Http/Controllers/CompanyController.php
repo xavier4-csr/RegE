@@ -6,16 +6,12 @@ use App\Models\Category;
 use App\Models\Company;
 use App\Models\ComplianceProgress;
 use App\Models\ComplianceStep;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'verified'])->except(['index', 'show']);
-    }
-
     // ── Public: Business Directory ────────────────────────────────────────
 
     public function index(Request $request)
@@ -94,7 +90,7 @@ class CompanyController extends Controller
             'logo'                => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
-        $data['user_id'] = auth()->id();
+        $data['user_id'] = Auth::id();
 
         if ($request->hasFile('logo')) {
             $data['logo_url'] = $request->file('logo')->store('company-logos', 'public');
@@ -160,7 +156,7 @@ class CompanyController extends Controller
 
     private function authorizeOwner(Company $company): void
     {
-        if ($company->user_id !== auth()->id()) {
+        if ($company->user_id !== Auth::id()) {
             abort(403);
         }
     }

@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Http;
 
 class PaymentController extends Controller
 {
-    public function __construct() { $this->middleware(['auth', 'verified']); }
-
     public function initiateMpesa(Request $request)
     {
         $data = $request->validate([

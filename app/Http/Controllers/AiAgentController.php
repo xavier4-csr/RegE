@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Http;
 
 class AiAgentController extends Controller
 {
-    public function __construct() { $this->middleware(['auth', 'verified']); }
-
     private function callClaude(string $system, string $prompt, string $model = 'claude-haiku-4-5'): array
     {
         $start    = microtime(true);

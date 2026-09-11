@@ -10,11 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'verified']);
-    }
-
     public function store(Request $request, Company $company)
     {
         if ($company->user_id === Auth::id()) {

@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ComplianceController extends Controller
 {
-    public function __construct() { $this->middleware(['auth', 'verified']); }
-
     public function index(Company $company)
     {
         $this->authorizeOwner($company);
