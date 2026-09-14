@@ -57,7 +57,7 @@
                                class="flex-1 text-center text-xs bg-blue-600 text-white py-1.5 rounded-lg hover:bg-blue-700 transition">
                                 View
                             </a>
-                            <a href="{{ route('compliance.index', $company) }}"
+                            <a href="{{ route('compliance.index', $company->id) }}"
                                class="flex-1 text-center text-xs border border-gray-200 text-gray-700 py-1.5 rounded-lg hover:bg-gray-50 transition">
                                 Compliance
                             </a>
@@ -97,7 +97,7 @@
                                 @endif
                             </p>
                         </div>
-                        <a href="{{ route('compliance.index', $item->company) }}"
+                       <a href="{{ route('compliance.index', $item->company->id) }}"
                            class="text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition whitespace-nowrap">
                             Manage →
                         </a>

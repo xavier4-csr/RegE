@@ -107,7 +107,9 @@ class ComplianceStepsSeeder extends Seeder
         ];
 
         foreach ($steps as $step) {
-            $step['applies_to_business_types'] = json_encode($step['applies_to_business_types']);
+            $step['applies_to_business_types'] = $step['applies_to_business_types'] === null
+                ? null
+                : json_encode($step['applies_to_business_types']);
             $step['required_documents']        = json_encode($step['required_documents']);
             $step['created_at'] = now();
             $step['updated_at'] = now();

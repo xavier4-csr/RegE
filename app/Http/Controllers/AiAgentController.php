@@ -11,40 +11,89 @@ use Illuminate\Support\Facades\Http;
 class AiAgentController extends Controller
 {
     private function callClaude(string $system, string $prompt, string $model = 'claude-haiku-4-5'): array
-    {
-        $start    = microtime(true);
-        $response = Http::withHeaders([
-            'x-api-key'         => config('services.anthropic.key'),
-            'anthropic-version' => '2023-06-01',
-            'content-type'      => 'application/json',
-        ])->post('https://api.anthropic.com/v1/messages', [
-            'model'      => $model,
-            'max_tokens' => 1024,
-            'system'     => $system,
-            'messages'   => [['role' => 'user', 'content' => $prompt]],
-        ]);
+{
+    $start = microtime(true);
+
+    try {
+        $response = Http::timeout(30)
+            ->withOptions(array_filter([
+                'verify' => config('services.anthropic.ca_bundle') ?: true,
+                'force_ip_resolve' => config('services.anthropic.force_ipv4') ? 'v4' : null,
+            ], static fn ($value) => $value !== null))
+            ->withHeaders([
+                'x-api-key'         => config('services.anthropic.key'),
+                'anthropic-version' => '2023-06-01',
+                'content-type'      => 'application/json',
+            ])
+            ->post('https://api.anthropic.com/v1/messages', [
+                'model'      => $model,
+                'max_tokens' => 1024,
+                'system'     => $system,
+                'messages'   => [['role' => 'user', 'content' => $prompt]],
+            ]);
+
         $json = $response->json();
+        \Log::info('Claude response', ['status' => $response->status(), 'body' => $json]);
+
         return [
-            'text'          => $json['content'][0]['text'] ?? '',
+            'text'          => $json['content'][0]['text'] ?? ($json['error']['message'] ?? 'No response'),
             'input_tokens'  => $json['usage']['input_tokens'] ?? 0,
             'output_tokens' => $json['usage']['output_tokens'] ?? 0,
             'duration_ms'   => (int)((microtime(true) - $start) * 1000),
             'model'         => $model,
             'success'       => $response->successful(),
         ];
-    }
 
-    public function suggestNames(Request $request)
-    {
-        $data = $request->validate(['idea' => ['required','string','max:300'], 'industry' => ['nullable','string','max:100']]);
-        $system = 'You are a Kenyan business naming expert. Respond ONLY with valid JSON, no markdown. Format: {"names":[{"name":"...","meaning":"...","why":"..."}]}';
-        $result = $this->callClaude($system, "Suggest 6 business names for: {$data['idea']}. Industry: {$data['industry']}");
-        AiInteraction::create(['user_id'=>Auth::id(),'agent'=>'name_suggester','prompt_summary'=>"Names for: {$data['idea']}",'response_summary'=>substr($result['text'],0,200),'model_used'=>$result['model'],'input_tokens'=>$result['input_tokens'],'output_tokens'=>$result['output_tokens'],'duration_ms'=>$result['duration_ms'],'was_successful'=>$result['success']]);
-        $names = json_decode($result['text'], true)['names'] ?? [];
-        $existing = Company::whereIn('company_name', array_column($names, 'name'))->pluck('company_name')->toArray();
-        foreach ($names as &$n) { $n['available'] = !in_array($n['name'], $existing, true); }
-        return response()->json(['names' => $names]);
+    } catch (\Exception $e) {
+        \Log::error('callClaude error: ' . $e->getMessage());
+        return [
+            'text'          => $e->getMessage(),
+            'input_tokens'  => 0,
+            'output_tokens' => 0,
+            'duration_ms'   => 0,
+            'model'         => $model,
+            'success'       => false,
+        ];
     }
+}
+public function suggestNames(Request $request)
+{
+    $data = $request->validate([
+        'idea'     => ['required', 'string', 'max:300'],
+        'industry' => ['nullable', 'string', 'max:100'],
+    ]);
+
+    try {
+        $result = $this->callClaude(
+            'You are a Kenyan business naming expert. Respond ONLY with valid JSON, no markdown. Format: {"names":[{"name":"...","meaning":"...","why":"..."}]}',
+            "Suggest 6 business names for: {$data['idea']}. Industry: " . ($data['industry'] ?? 'General')
+        );
+
+        if (!$result['success']) {
+            \Log::error('Claude API failed', ['result' => $result]);
+            return response()->json(['error' => 'AI service error', 'detail' => $result['text']], 500);
+        }
+
+        $decoded = json_decode($result['text'], true);
+        if (!is_array($decoded) || !isset($decoded['names']) || !is_array($decoded['names'])) {
+            \Log::error('Claude returned invalid name suggestions JSON', ['text' => $result['text']]);
+            return response()->json(['error' => 'AI returned an invalid response. Please try again.'], 502);
+        }
+
+        $names = $decoded['names'];
+        $existing = Company::whereIn('company_name', array_column($names, 'name'))
+                           ->pluck('company_name')->toArray();
+        foreach ($names as &$n) {
+            $n['available'] = !in_array($n['name'], $existing, true);
+        }
+
+        return response()->json(['names' => $names]);
+
+    } catch (\Exception $e) {
+        \Log::error('suggestNames exception: ' . $e->getMessage());
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
 
     public function writeDescription(Request $request)
     {

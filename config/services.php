@@ -35,4 +35,23 @@ return [
         ],
     ],
 
+    'anthropic' => [
+        'key' => env('ANTHROPIC_API_KEY'),
+        'ca_bundle' => env('ANTHROPIC_CA_BUNDLE'),
+        'force_ipv4' => env('ANTHROPIC_FORCE_IPV4', false),
+    ],
+
+'mpesa' => [
+    'consumer_key'    => env('MPESA_CONSUMER_KEY'),
+    'consumer_secret' => env('MPESA_CONSUMER_SECRET'),
+    'shortcode'       => env('MPESA_SHORTCODE', '174379'),
+    'passkey'         => env('MPESA_PASSKEY'),
+    'env'             => env('MPESA_ENV', 'sandbox'),
+],
+
+'africastalking' => [
+    'username' => env('AT_USERNAME', 'sandbox'),
+    'api_key'  => env('AT_API_KEY'),
+],
+
 ];

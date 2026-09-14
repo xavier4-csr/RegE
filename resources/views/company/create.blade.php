@@ -38,6 +38,7 @@
                 </div>
             </template>
         </div>
+        <p x-show="nameError" x-text="nameError" class="mt-3 text-sm text-red-700"></p>
     </div>
 
     {{-- Form --}}
@@ -167,6 +168,7 @@ function registerForm() {
         description: '',
         suggestedNames: [],
         selectedSuggestion: null,
+        nameError: '',
         loadingNames: false,
         loadingDesc: false,
 
@@ -174,6 +176,7 @@ function registerForm() {
             if (!this.nameIdea.trim()) return;
             this.loadingNames = true;
             this.suggestedNames = [];
+            this.nameError = '';
             try {
                 const res = await fetch('{{ route('ai.names') }}', {
                     method: 'POST',
@@ -184,8 +187,14 @@ function registerForm() {
                     body: JSON.stringify({ idea: this.nameIdea }),
                 });
                 const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.detail || data.error || 'Unable to generate suggestions.');
+                }
                 this.suggestedNames = data.names ?? [];
-            } catch(e) { console.error(e); }
+            } catch(e) {
+                console.error(e);
+                this.nameError = e.message;
+            }
             this.loadingNames = false;
         },
 
