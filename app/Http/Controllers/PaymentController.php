@@ -28,7 +28,8 @@ class PaymentController extends Controller
         $timestamp  = now()->format('YmdHis');
         $password   = base64_encode($shortcode . $passkey . $timestamp);
 
-        $response = Http::withToken($token)
+        $response = Http::withoutVerifying()
+            ->withToken($token)
             ->post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', [
                 'BusinessShortCode' => $shortcode,
                 'Password'          => $password,
@@ -87,7 +88,8 @@ class PaymentController extends Controller
 
     private function getDarajaToken(): ?string
     {
-        $response = Http::withBasicAuth(config('services.mpesa.consumer_key'), config('services.mpesa.consumer_secret'))
+        $response = Http::withoutVerifying()
+            ->withBasicAuth(config('services.mpesa.consumer_key'), config('services.mpesa.consumer_secret'))
             ->get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials');
         return $response->successful() ? $response->json('access_token') : null;
     }

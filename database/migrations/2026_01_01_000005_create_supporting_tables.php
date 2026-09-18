@@ -22,17 +22,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('compliance_progress', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->foreignId('compliance_step_id')->constrained()->onDelete('cascade');
-            $table->enum('status',['pending','in_progress','completed','skipped'])->default('pending');
-            $table->date('due_date')->nullable();
-            $table->date('completed_at')->nullable();
-            $table->text('notes')->nullable();
-            $table->timestamps();
-            $table->unique(['company_id','compliance_step_id']);
-        });
+
 
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
@@ -112,7 +102,6 @@ return new class extends Migration
         Schema::dropIfExists('reviews');
         Schema::dropIfExists('payments');
         Schema::dropIfExists('documents');
-        Schema::dropIfExists('compliance_progress');
         Schema::dropIfExists('compliance_steps');
     }
 };

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ComplianceProgress extends Model
 {
+   // protected $table = 'compliance_progress';
+
     protected $fillable = [
         'company_id', 'compliance_step_id', 'status',
         'due_date', 'completed_at', 'notes',

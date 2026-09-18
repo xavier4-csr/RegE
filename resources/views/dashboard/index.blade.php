@@ -49,7 +49,7 @@
                             {{ $company->reviews_count }} reviews · {{ $company->compliance_percent }}% compliant
                         </p>
                         <div class="mt-3 h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-green-500 rounded-full"
+                            <div class="h-full bg-green-500 rounded-full"</div>
                                  style="width: {{ $company->compliance_percent }}%"></div>
                         </div>
                         <div class="flex gap-2 mt-4">
