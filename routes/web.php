@@ -87,3 +87,42 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::post('/webhooks/mpesa', [PaymentController::class, 'mpesaCallback'])
     ->name('payments.mpesa.callback')
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+
+Route::get('/test-mpesa', function () {
+    $response = \Illuminate\Support\Facades\Http::withoutVerifying()
+        ->withBasicAuth(config('services.mpesa.consumer_key'), config('services.mpesa.consumer_secret'))
+        ->get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials');
+
+    $token = $response->json('access_token');
+
+    if (!$token) {
+        return 'TOKEN FAILED: ' . json_encode($response->json());
+    }
+
+    $shortcode = config('services.mpesa.shortcode');
+    $passkey   = config('services.mpesa.passkey');
+    $timestamp = now()->format('YmdHis');
+    $password  = base64_encode($shortcode . $passkey . $timestamp);
+
+    $stk = \Illuminate\Support\Facades\Http::withoutVerifying()
+        ->withToken($token)
+        ->post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', [
+            'BusinessShortCode' => $shortcode,
+            'Password'          => $password,
+            'Timestamp'         => $timestamp,
+            'TransactionType'   => 'CustomerPayBillOnline',
+            'Amount'            => 1,
+            'PartyA'            => '254708374149',
+            'PartyB'            => $shortcode,
+            'PhoneNumber'       => '254708374149',
+            'CallBackURL'       => 'https://webhook.site/test',
+            'AccountReference'  => 'RegE',
+            'TransactionDesc'   => 'Test',
+        ]);
+
+    return response()->json([
+        'token'      => substr($token, 0, 20) . '...',
+        'stk_status' => $stk->status(),
+        'stk_body'   => $stk->json(),
+    ]);
+});

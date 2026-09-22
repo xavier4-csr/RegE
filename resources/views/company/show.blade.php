@@ -178,6 +178,38 @@
                     </div>
                 </dl>
             </div>
+
+            @auth
+                @if((int) $company->user_id === (int) auth()->id() && !$company->is_featured)
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-5">
+                        <h2 class="font-bold text-yellow-900">Get Featured</h2>
+                        <p class="text-sm text-yellow-800 mt-1 mb-4">Test an M-Pesa STK Push for this company.</p>
+                        <form method="POST" action="{{ route('payments.mpesa') }}" class="space-y-3">
+                            @csrf
+                            <input type="hidden" name="amount" value="1">
+                            <input type="hidden" name="type" value="premium_listing">
+                            <input type="hidden" name="company_id" value="{{ $company->id }}">
+                            <label class="block text-sm font-medium text-yellow-900" for="payment-phone">M-Pesa phone number</label>
+                            <input id="payment-phone" name="phone" type="tel" value="{{ auth()->user()->phone_no }}" required
+                                   placeholder="0712345678"
+                                   class="w-full border border-yellow-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                            <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                                Send STK Push
+                            </button>
+                        </form>
+                    </div>
+                @elseif((int) $company->user_id !== (int) auth()->id())
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-5">
+                        <h2 class="font-bold text-gray-900">Get Featured</h2>
+                        <p class="text-sm text-gray-600 mt-1">Only the company owner can start a featured listing payment.</p>
+                    </div>
+                @endif
+            @else
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-5">
+                    <h2 class="font-bold text-gray-900">Get Featured</h2>
+                    <p class="text-sm text-gray-600 mt-1">Log in as the company owner to test the M-Pesa STK Push.</p>
+                </div>
+            @endauth
         </div>
     </div>
 

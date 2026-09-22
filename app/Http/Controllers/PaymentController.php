@@ -20,13 +20,20 @@ class PaymentController extends Controller
         ]);
 
         $phone = preg_replace('/^(0|254|\+254)/', '254', $data['phone']);
+
         $token = $this->getDarajaToken();
-        if (!$token) return back()->withErrors(['payment' => 'Payment service unavailable.']);
+
+        if (!$token) {
+            \Illuminate\Support\Facades\Log::error('Daraja token fetch failed');
+            return back()->withErrors(['payment' => 'Could not connect to M-Pesa. Try again.']);
+        }
 
         $shortcode  = config('services.mpesa.shortcode');
         $passkey    = config('services.mpesa.passkey');
         $timestamp  = now()->format('YmdHis');
         $password   = base64_encode($shortcode . $passkey . $timestamp);
+
+        \Illuminate\Support\Facades\Log::info('STK Push attempt', ['phone' => $phone, 'amount' => $data['amount']]);
 
         $response = Http::withoutVerifying()
             ->withToken($token)
@@ -39,12 +46,19 @@ class PaymentController extends Controller
                 'PartyA'            => $phone,
                 'PartyB'            => $shortcode,
                 'PhoneNumber'       => $phone,
-                'CallBackURL'       => route('payments.mpesa.callback'),
+                'CallBackURL'       => 'https://webhook.site/test',
                 'AccountReference'  => 'RegE',
-                'TransactionDesc'   => ucfirst(str_replace('_', ' ', $data['type'])),
+                'TransactionDesc'   => 'Payment',
             ]);
 
-        if (!$response->successful()) return back()->withErrors(['payment' => 'STK Push failed.']);
+            \Illuminate\Support\Facades\Log::info('STK Push response', [
+            'status' => $response->status(),
+            'body'   => $response->json(),
+        ]);
+
+            if (!$response->successful() || $response->json('ResponseCode') !== '0') {
+                return back()->withErrors(['payment' => 'STK Push failed: ' . $response->json('ResponseDescription')]);
+        }
 
         Payment::create([
             'user_id'           => Auth::id(),
