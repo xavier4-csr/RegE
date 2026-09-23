@@ -8,6 +8,7 @@ use App\Http\Controllers\ComplianceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AiAgentController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public routes ──────────────────────────────────────────────────────────
@@ -80,6 +81,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Reviews
     Route::post('/companies/{company}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+    // Admin panel
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+        Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::patch('/users/{user}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
+        Route::patch('/users/{user}/make-admin', [AdminController::class, 'makeAdmin'])->name('users.make-admin');
+        Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
+        Route::get('/companies', [AdminController::class, 'companies'])->name('companies');
+        Route::patch('/companies/{company}/toggle-status', [AdminController::class, 'toggleCompanyStatus'])->name('companies.toggle-status');
+        Route::patch('/companies/{company}/toggle-featured', [AdminController::class, 'toggleFeatured'])->name('companies.toggle-featured');
+        Route::patch('/companies/{company}/toggle-verified', [AdminController::class, 'toggleVerified'])->name('companies.toggle-verified');
+        Route::delete('/companies/{company}', [AdminController::class, 'deleteCompany'])->name('companies.delete');
+        Route::get('/payments', [AdminController::class, 'payments'])->name('payments');
+        Route::get('/compliance-steps', [AdminController::class, 'complianceSteps'])->name('compliance-steps');
+        Route::post('/compliance-steps', [AdminController::class, 'createComplianceStep'])->name('compliance-steps.create');
+        Route::delete('/compliance-steps/{step}', [AdminController::class, 'deleteComplianceStep'])->name('compliance-steps.delete');
+    });
 });
 
 // ── Webhook (no CSRF) ──────────────────────────────────────────────────────
