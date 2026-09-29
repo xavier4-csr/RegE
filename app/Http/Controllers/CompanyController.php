@@ -156,6 +156,14 @@ class CompanyController extends Controller
 
     private function authorizeOwner(Company $company): void
     {
+        if (!Auth::check()) {
+            abort(403);
+        }
+
+        if (Auth::user()->isAdmin()) {
+            return;
+        }
+
         if ($company->user_id !== Auth::id()) {
             abort(403);
         }
