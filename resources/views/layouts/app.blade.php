@@ -20,6 +20,7 @@
             <a href="{{ route('contact') }}" class="hover:text-blue-300 transition">Contact</a>
             @auth
                 <a href="{{ route('dashboard') }}" class="hover:text-blue-300 transition">Dashboard</a>
+                <a href="{{ route('documents.index') }}" class="hover:text-blue-300 transition">Documents</a>
                 <a href="{{ route('my-companies.create') }}" class="bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded-lg transition font-medium">+ Register Business</a>
                 <div class="relative" x-data="{ show: false }">
                     <button @click="show = !show" class="flex items-center gap-2">

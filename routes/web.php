@@ -54,6 +54,13 @@ Route::get('/forgot-password', fn() => view('auth.forgot-password'))->name('pass
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
+Route::get('/documents',                                  [App\Http\Controllers\DocumentController::class, 'index'])->name('documents.index');
+Route::get('/documents/{company}/registration-cert',      [App\Http\Controllers\DocumentController::class, 'generateRegistrationCert'])->name('documents.registration-cert');
+Route::get('/documents/{company}/compliance-checklist',   [App\Http\Controllers\DocumentController::class, 'generateComplianceChecklist'])->name('documents.compliance-checklist');
+Route::post('/documents/{company}/partnership-deed',      [App\Http\Controllers\DocumentController::class, 'generatePartnershipDeed'])->name('documents.partnership-deed');
+Route::get('/documents/{document}/download',              [App\Http\Controllers\DocumentController::class, 'download'])->name('documents.download');
+Route::delete('/documents/{document}',                    [App\Http\Controllers\DocumentController::class, 'destroy'])->name('documents.destroy');
+
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
