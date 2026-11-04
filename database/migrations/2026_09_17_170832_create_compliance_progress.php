@@ -13,8 +13,8 @@ return new class extends Migration
     {
          Schema::create('compliance_progress', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id_id')->constrained()->onDelete('cascade');
-            $table->foreignId('compliance_step')->constrained()->onDelete('cascade');
+            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->foreignId('compliance_step_id')->constrained('compliance_steps')->onDelete('cascade');
             $table->enum('status',['pending','in_progress','completed','skipped'])->default('pending');
             $table->date('due_date')->nullable();
             $table->date('completed_at')->nullable();
