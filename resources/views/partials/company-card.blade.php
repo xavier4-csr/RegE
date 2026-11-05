@@ -7,11 +7,13 @@
    class="group bg-white rounded-2xl border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-200 overflow-hidden flex flex-col">
 
     {{-- Banner + Logo --}}
-    <div class="relative h-24 flex-shrink-0"
+    <div class="company-card-banner relative h-24 flex-shrink-0"
          style="background: linear-gradient(135deg,
             {{ ['#1e3a5f','#1e3a5f','#1a3650','#162d47','#1e3a5f'][$companyGradientIndex] }},
             {{ ['#2563eb','#4f46e5','#0891b2','#059669','#7c3aed'][$companyGradientIndex] }});">
 
+        <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&amp;fit=crop&amp;w=900&amp;q=75"
+             alt="" loading="lazy">
         {{-- Pattern --}}
         <div class="absolute inset-0 opacity-10"
              style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>

@@ -4,38 +4,25 @@
 @section('content')
 
 {{-- ── Hero ──────────────────────────────────────────────────────────────── --}}
-<section class="relative rounded-2xl overflow-hidden mb-14" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);">
+<section class="home-hero mb-14" aria-labelledby="home-title">
+    <div class="hero-grid-pattern" aria-hidden="true"></div>
 
-    {{-- Grid pattern overlay --}}
-    <div class="absolute inset-0 opacity-5"
-         style="background-image: linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px); background-size: 40px 40px;"></div>
-
-    {{-- Glow accents --}}
-    <div class="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-10 blur-3xl" style="background: radial-gradient(circle, #3b82f6, transparent);"></div>
-    <div class="absolute bottom-0 right-1/4 w-64 h-64 rounded-full opacity-10 blur-3xl" style="background: radial-gradient(circle, #6366f1, transparent);"></div>
-
-    <div class="relative px-8 py-20 text-center">
-        {{-- Badge --}}
+    <div class="hero-copy">
         <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 text-blue-200 text-xs font-medium px-4 py-1.5 rounded-full mb-6">
             <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
             Live in Kenya — Serving 47 Counties
         </div>
 
-        {{-- Headline --}}
-        <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-5 tracking-tight">
-            The smarter way to<br>
-            <span style="background: linear-gradient(90deg, #60a5fa, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                register &amp; grow your business
-            </span>
+        <h1 id="home-title" class="font-extrabold text-white mb-5">
+            Your next big idea<br>
+            <span class="hero-headline-accent">starts right here.</span>
         </h1>
 
-        <p class="text-slate-300 text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-            RegE combines business registration guidance, post-registration compliance tracking,
-            AI-powered tools, and a B2B directory — all built for Kenyan entrepreneurs.
+        <p class="text-slate-300 text-lg max-w-xl mb-8 leading-relaxed">
+            Register, stay compliant, and grow your business with one clear path — made for Kenyan entrepreneurs.
         </p>
 
-        {{-- CTAs --}}
-        <div class="flex flex-col sm:flex-row gap-3 justify-center mb-12">
+        <div class="flex flex-col sm:flex-row gap-3 mb-10">
             <a href="{{ route('register') }}"
                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3.5 rounded-xl transition shadow-lg shadow-blue-900/40 text-sm">
                 Get Started Free
@@ -48,30 +35,58 @@
             </a>
         </div>
 
-        {{-- Trust stats --}}
         @php
             $totalCo    = \App\Models\Company::where('status','active')->count();
             $totalUsers = \App\Models\User::count();
         @endphp
-        <div class="flex flex-wrap justify-center gap-8 text-sm">
-            <div class="text-center">
+        <div class="flex flex-wrap gap-x-6 gap-y-4 text-sm">
+            <div>
                 <div class="text-2xl font-bold text-white">{{ number_format($totalUsers) }}+</div>
                 <div class="text-slate-400 text-xs mt-0.5">Entrepreneurs</div>
             </div>
-            <div class="w-px bg-white/10"></div>
-            <div class="text-center">
+            <div class="home-stat">
                 <div class="text-2xl font-bold text-white">{{ number_format($totalCo) }}+</div>
                 <div class="text-slate-400 text-xs mt-0.5">Registered Businesses</div>
             </div>
-            <div class="w-px bg-white/10"></div>
-            <div class="text-center">
+            <div class="home-stat">
                 <div class="text-2xl font-bold text-white">47</div>
                 <div class="text-slate-400 text-xs mt-0.5">Kenya Counties</div>
             </div>
-            <div class="w-px bg-white/10"></div>
-            <div class="text-center">
+            <div class="home-stat">
                 <div class="text-2xl font-bold text-white">8</div>
                 <div class="text-slate-400 text-xs mt-0.5">Compliance Steps</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-scene" aria-label="Kenyan founders working together">
+        <img class="hero-photo"
+             src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&amp;fit=crop&amp;w=1200&amp;q=85"
+             alt="A team of entrepreneurs collaborating around a table"
+             fetchpriority="high">
+        <div class="hero-photo-shade" aria-hidden="true"></div>
+        <div class="hero-model" aria-hidden="true">
+            <div class="hero-model-tower"></div>
+            <div class="hero-model-plinth"></div>
+        </div>
+        <div class="hero-float-card">
+            <div class="text-[10px] uppercase tracking-[.16em] font-bold text-slate-500">Your business journey</div>
+            <div class="flex items-center gap-2 mt-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-sm font-bold text-slate-800">Ready to take off</span>
+            </div>
+        </div>
+        <div class="hero-glass-card">
+            <div class="flex justify-between items-center">
+                <span class="text-xs font-semibold text-slate-500">REGISTRATION</span>
+                <span class="text-xs font-bold text-emerald-600">STEP 1 OF 4</span>
+            </div>
+            <div class="mt-3 text-lg font-extrabold text-slate-900">Built for your next chapter</div>
+            <div class="mt-3 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                <div class="h-full w-1/4 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+            </div>
+            <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+                <span class="text-emerald-500">●</span> Registration, compliance &amp; growth
             </div>
         </div>
     </div>

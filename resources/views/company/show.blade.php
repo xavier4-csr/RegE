@@ -17,7 +17,7 @@
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {{-- Banner --}}
         <div class="h-36 relative"
-             style="background: linear-gradient(135deg, #0f172a, #1e40af);">
+             style="background: linear-gradient(135deg, rgba(15,23,42,.35), rgba(30,64,175,.55)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=1400&amp;q=80') center 42% / cover;">
             <div class="absolute inset-0 opacity-10"
                  style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
 
